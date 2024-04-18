@@ -4,13 +4,10 @@ import {
   text,
   primaryKey,
   integer,
+  uuid,
 } from "drizzle-orm/pg-core";
-import type { AdapterAccount } from "next-auth/adapters";
-
-export const testings = pgTable("testing", {
-  id: text("id").notNull().primaryKey(),
-  name: text("name"),
-});
+import type { AdapterAccount } from "@auth/core/adapters";
+import { sql } from "drizzle-orm";
 
 export const users = pgTable("user", {
   id: text("id").notNull().primaryKey(),
@@ -63,3 +60,18 @@ export const verificationTokens = pgTable(
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
   })
 );
+
+export const product = pgTable("product", {
+  id: uuid("id")
+    .notNull()
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  price: integer("price").notNull(),
+  description: text("description").notNull(),
+  image: text("image"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type Product = typeof product.$inferSelect;
